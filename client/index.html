@@ -18,16 +18,19 @@
       <!-- Your HTML goes here! -->
       <button id="refresh">Refresh</button>
       <form action="">
-        <label for="roomMenu">room</label>
-        <select id="roomMenu" name="">
-          <option name="4chan">4chan</option>
+        <label for="roomSelect">room</label>
+        <select id="roomSelect" name="">
         </select><br>
+        <button id="addRoom" name="" type="button">Add new room</button><br>
+        <label for="newRoomName">new room name</label>
+        <input id="newRoomName" name="" type="text" size="10"><br>
         <label for="messageName">name</label>
         <input id="messageName" name="" type="text" size="10"><br>
         <label for="messageEntry">message</label>
         <input id="messageEntry" name="" type="text" size="20"><br>
-        <button id="submitMessage" name="Submit" type="button">Test</button>
+        <button id="send" class="submit" name="Submit" type="button">Send</button>
       </form>
+      <div id="chats"></div>
     </div>
   </body>
 </html>
