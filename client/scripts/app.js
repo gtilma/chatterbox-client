@@ -6,34 +6,26 @@ app.init = function() {
 }
 
 app.init();
-//format messages as needed, also update styles.css
-//display messages received from server
-//use $.ajax to get everything from https://api.parse.com/1/classes/chatterbox
 app.fetch = function(room) {
-  var roomQuery = ''
-  if (room) {
-    roomQuery = '&where={"roomname":"'+room+'"}'
+  var queryData = {
+    order: "-createdAt",
+    limit: "200",
   }
+  if (room) queryData.where = {"roomname": String(room)};
 
 	$.ajax({
-		url: app.server + '?order=-createdAt&limit=200'+roomQuery,
+		url: app.server,
+    data: queryData,
 		type: "GET",
 		contentType: app.contentType,
 		success: function(data) {
-      // can we add spam handling here?
       for (var i = 0; i < data.results.length; i++) {
-        // console.log(data.results[i])
-        //function(message) {
         if (data.results[i].hasOwnProperty("text")) {data.results[i].text = String(data.results[i].text).replace(/</g, "&lt;").replace(/>/g, "&gt;")}
         if (data.results[i].hasOwnProperty("roomname")) {data.results[i].roomname = String(data.results[i].roomname).replace(/</g, "&lt;").replace(/>/g, "&gt;")}
         if (data.results[i].hasOwnProperty("username")) {data.results[i].username = String(data.results[i].username).replace(/</g, "&lt;").replace(/>/g, "&gt;")}
-        addToRoom(data.results[i]);
-        // var room = data.results[i].roomname;
-        // if (!roomList.hasOwnProperty(room)) {
-        //   updateRoomList(room);
-        // }
+        app.addToRoom(data.results[i]);
       }
-      console.log(data)
+      app.formatFriends();
 		},
 		error: function() {
 			console.log("error")
@@ -42,7 +34,6 @@ app.fetch = function(room) {
 };
 
 app.send = function(message) {
-//send messages to parse server with post request
 	$.ajax({
 		url: app.server,
 		type: "POST",
@@ -58,20 +49,19 @@ app.send = function(message) {
 	});
 }
 
-	//probably have to parse the ajax somehow
-	//sanitize?
 
-app.addRoom = function() {
-  var roomName = $("#newRoomName").val();
-  if($('#roomSelect option[name="'+roomName+'"]').length === 0) {
-    $("#roomSelect").append('<option name="'+roomName+'">'+roomName+'</option>');
-    $("#roomSelect").val(roomName);
-    $("#newRoomName").val('');
-  }
-};
 
 app.clearMessages = function() {
   $('#chats').html('');
+};
+
+var friends = [];
+
+app.addFriend = function (friend) {
+  friends.push(friend.text());
+  console.log(friends);
+  $(friend).addClass('friend');
+  app.formatFriends();
 };
 
 app.addMessage = function () {
@@ -82,20 +72,24 @@ app.addMessage = function () {
   app.send(message);
 };
 
-// var friends = [];
-
-app.addFriend = function (friend) {
-  //friends.push(friend);
-  $(friend).addClass('friend');
+app.addRoom = function() {
+  var roomName = $("#newRoomName").val();
+  if($('#roomSelect option[name="'+roomName+'"]').length === 0) {
+    $("#roomSelect").append('<option name="'+roomName+'">'+roomName+'</option>');
+    $("#roomSelect").val(roomName);
+    $("#newRoomName").val('');
+    app.clearMessages();
+    app.fetch(roomName);
+  }
 };
 
-//add messages to index.html, probably with append or prepend
-var addToRoom = function (message) {
+app.addToRoom = function (message) {
   var box = $(document.createElement('div'));
-  box.addClass('message');
-  box.html('<span class="username">' + message.username + '</span> : ' + message.text);
+  box.addClass('chat');
+  var classUsername = message.username !== undefined ? message.username.replace(' ', '_') : 'undefined'
+  box.html('<span class="username ' + classUsername + '">' + message.username + '</span>' + message.text);
 
-  if ($("#"+message.roomname).length === 0) {
+  if ($("[id='"+message.roomname+"']").length === 0) {
     var newRoom = $(document.createElement('div'));
     newRoom.attr('id',message.roomname);
     newRoom.attr('class','room');
@@ -105,10 +99,16 @@ var addToRoom = function (message) {
     }
   } 
 
-  $('#'+message.roomname).append(box);
-  // TODO : add timestamp
-  // TODO : add to pertinent room
+  $("[id='"+message.roomname+"']").append(box);
 };
+
+app.formatFriends = function() {
+  console.log('fire');
+  for (var i = 0; i < friends.length; i++) {
+    var friendName = friends[i].replace(' ', '_');
+    $('.'+friendName).parent().css({'color': 'red', 'font-weight': 'bold'});
+  }
+}
 
 $(document).on('ready', function() {
   app.fetch();
@@ -118,7 +118,7 @@ $(document).on('ready', function() {
     app.clearMessages();
     app.fetch(roomName);
     $('.room').hide();
-    $('#' + roomName).show();
+    $("[id='"+roomName+"']").show();
   });
 
   $("#send").on('click',function() {
@@ -132,46 +132,22 @@ $(document).on('ready', function() {
     app.fetch(selectedRoom);
   });
 
-  $("#addRoom").on('click', app.addRoom());
+  $("#addRoom").on('click', function() {
+    app.addRoom();
+  });
 
   $(document).on('click', '.username', function() {
+    $(this).removeClass('maybeFriend');
     app.addFriend($(this));
   });
 
-  $(document).on('hover', '.username', function(e) {
-    $(e.target).addClass('maybeFriend');
+  $(document).on('mouseover', '.username', function() {
+    if(!$(this).hasClass('friend')) $(this).addClass('maybeFriend');
+  }).on('mouseleave', '.username', function() {
+    $(this).removeClass('maybeFriend');
   });
 });
 
 
-// clearing messages from DOM (on refresh?)
-
 //   Test specs
-// app.addFriend = checking .username
-// allow users to friend each other
-  // Display all messages sent by friends in bold
-
 // app.handleSubmit = triggering $('#send .submit')
-  
-// prettification (CSS)
-
-// ====== DONE =======
-// app.addMessage = checking #chats.children
-// app.addRoom = checking #roomSelect
-// app.clearMessages  = clearing #chats.children
-
-// button/input to create new room
-  // add room to dropdown list
-  // when list switches, show/hide rooms as appropriate
-  // apply room name to inputs, and place messages in appropriate room
-  // when adding a room, update room list & add new message container
-  // loop through data & check for message container div (update list if !exists container)
-
-//apply escaping to inputs
-  // sanitize on send as well as fetch
-
-//refreshing messages - probably use a button
-  //either all messages from that time, or next 10
-
-//allow users to select username
-  //apply username to all messages/inputs from that username

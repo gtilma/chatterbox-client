@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles/styles.css">
 
     <!-- dependencies -->
-    <script src="bower_components/jquery/jquery.min.js"></script>
+    <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/underscore/underscore-min.js"></script>
     <!-- your scripts -->
     <script src="env/config.js"></script>
@@ -14,20 +14,19 @@
   </head>
   <body>
     <div id="main">
-      <h1>chatterbox</h1>
+      <h1>chatter<span>box</span></h1>
       <!-- Your HTML goes here! -->
       <button id="refresh">Refresh</button>
       <form action="">
         <label for="roomSelect">room</label>
-        <select id="roomSelect" name="">
-        </select><br>
-        <button id="addRoom" name="" type="button">Add new room</button><br>
+        <select id="roomSelect" name=""></select>
         <label for="newRoomName">new room name</label>
-        <input id="newRoomName" name="" type="text" size="10"><br>
+        <input id="newRoomName" name="" type="text" size="10">
+        <button id="addRoom" name="" type="button">Add new room</button>
         <label for="messageName">name</label>
-        <input id="messageName" name="" type="text" size="10"><br>
+        <input id="messageName" name="" type="text" size="10">
         <label for="messageEntry">message</label>
-        <input id="messageEntry" name="" type="text" size="20"><br>
+        <input id="messageEntry" name="" type="text" size="20">
         <button id="send" class="submit" name="Submit" type="button">Send</button>
       </form>
       <div id="chats"></div>

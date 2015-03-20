@@ -5,6 +5,45 @@ body {
     font-family: arial, sans-serif;
 }
 
+.chat {
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: #eee;
+}
+
+.chat .username {
+    font-weight: 800;
+    display: block;
+}
+
+.chat .username.maybeFriend {
+    color: green;
+    cursor: pointer;
+}
+
+.chat:hover {
+    background-color: #ddd;
+}
+
+form {
+    padding: 20px;
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+
+form input[type=text] {
+    display: block;
+    font-size: 12px;
+    margin-right: 10px;
+    padding: 5px;
+    width: 50%;
+}
+
+label {
+    display: block;
+    margin-top: 1em;
+}
+
 #main {
     width: 500px;
     margin: auto;
@@ -46,32 +85,6 @@ body {
     line-height: 13px;
 }
 
-form {
-    padding: 20px;
-    padding-left: 0;
-    margin-bottom: 20px;
-}
-
-form input[type=text] {
-    margin-right: 10px;
-    width: 70%;
-    font-size: 12px;
-    padding: 5px;
-}
-
-.chat {
-    padding: 5px;
-    margin-bottom: 5px;
-    background-color: #eee;
-}
-
-.chat .username {
-    font-weight: 800;
-}
-
-.chat:hover {
-    background-color: #ddd;
-}
 
 .spinner {
     float: right;
